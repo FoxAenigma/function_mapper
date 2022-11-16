@@ -31,7 +31,7 @@ def lagrange(points, _):
     poly = 0
     for j in range(len(points)):
         poly += points[j,1]*lx(points, j) 
-    return poly
+    return poly 
 
 
 def min_square():
