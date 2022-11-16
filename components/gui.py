@@ -9,7 +9,7 @@ from pathlib import Path
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Label
 from tkinter.ttk import Combobox
 from ctypes import windll, byref, create_unicode_buffer, create_string_buffer
-from components.controller import init_setup, set_point, clean_points, update_curve
+from components.controller import init_setup, set_point, clean_plot, update_curve
 
 FR_PRIVATE  = 0x10
 FR_NOT_ENUM = 0x20
@@ -99,11 +99,11 @@ canvas.create_text(
 
 algo = Combobox(
     state = "readonly", 
-    values = ["Newton", "Lagrange"],
+    values = ["newton", "lagrange", "linear", "exp_asc", "exp_dsc", "ln"],
     font = (FONT, 22 * -1),
     width=10,
 )
-algo.set("Newton")
+algo.set("linear")
 algo.place(x=40, y=90)
 
 ## Deg
@@ -123,7 +123,7 @@ canvas.create_text(
     font=("VT323 Regular", 48 * -1)
 )
 
-entry_1 = Entry(
+deg = Entry(
     bd=0,
     bg="#FFFFFF",
     fg="#000716",
@@ -131,7 +131,7 @@ entry_1 = Entry(
     font=(FONT, 32* -1),
     
 )
-entry_1.place(
+deg.place(
     x=40,
     y=210.0,
     width=30.0,
@@ -171,7 +171,7 @@ button_plot = Button(
     image=img_plot,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: update_curve(ax, chart),
+    command=lambda: update_curve(ax, chart, algo.get(), deg.get()),
     relief="flat"
 )
 button_plot.place(
@@ -186,7 +186,7 @@ button_clean = Button(
     image=img_clean,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: clean_points(ax, chart),
+    command=lambda: clean_plot(ax, chart),
     relief="flat"
 )
 button_clean.place(

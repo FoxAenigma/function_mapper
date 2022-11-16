@@ -1,7 +1,8 @@
 import sympy as sym
 
-global TOL
+global TOL, x
 TOL = 1e-5
+x = sym.Symbol("x")
 
 def newton(points, _):
     def ddiv(sample):
@@ -11,7 +12,6 @@ def newton(points, _):
             coef = (ddiv(sample[1:,:]) - ddiv(sample[:-1,:])) / (sample[-1,0]-points[0,0])
         return coef
 
-    x = sym.Symbol("x")
     poly = 0
     roots = 1
     for i in range(len(points)):
@@ -21,12 +21,11 @@ def newton(points, _):
 
 def lagrange(points, _):
     def lx(sample, j):
-        x = sym.Symbol("x")
         l = 1
         for i in range(len(sample)):
             if i != j:
                 l = l * (x-sample[i,0])/(sample[j,0]-sample[j,0])
-        return
+        return l
 
     poly = 0
     for j in range(len(points)):
@@ -34,14 +33,39 @@ def lagrange(points, _):
     return poly 
 
 
-def min_square():
-    return
+def linear(points, _):    
+    a, b = coef_msquare(points)
+    poly = a*x+b
+    return poly
 
-def exponetial_asc():
-    return
+def exp_asc(points, _):
+    a, b = coef_msquare(points)
+    poly = sym.exp(b)*sym.exp(a*x)
+    return poly
 
-def exponetial_dsc():
-    return
+def exp_dsc(points, _):
+    a, b = coef_msquare(points)
+    poly = sym.exp(b)*sym.exp(-a*x)
+    return poly
 
-def ln():
-    return 
+def ln(points, _):
+    a, _ = coef_msquare(points)
+    poly = sym.ln(a*x)
+    return poly
+
+
+def coef_msquare(points):
+    n = len(points)
+    xiyi = 0
+    xi = 0
+    yi = 0
+    xi2 = 0
+    for i in range(n):
+        xiyi += points[i,0]*points[i,1]
+        xi += points[i,0]
+        yi += points[i,1]
+        xi2 += points[i,0]**2
+    print(xiyi, xi, yi, xi2)
+    a = (n*xiyi-xi*yi)/(n*xi2-xi**2)
+    b = (yi-a*xi)/n
+    return a, b
