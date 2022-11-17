@@ -10,8 +10,8 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 def init_setup(window):
     reset()
-    ax, chart = make_plot(window)
-    return ax, chart
+    ax, chart, fig = make_plot(window)
+    return ax, chart, fig
 
 def reset():
     write_points(["sensorX", "sensorY"], mode='w')
@@ -41,7 +41,7 @@ def make_plot(window):
     chart = FigureCanvasTkAgg(fig, master = window)  
     chart.get_tk_widget().place(x=220, y=120)
     chart.draw()
-    return ax, chart
+    return ax, chart, fig
 
 def clean_plot(ax, chart, points=True, curve=True, data=True):
     if data:

@@ -10,6 +10,7 @@ from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Label
 from tkinter.ttk import Combobox
 from ctypes import windll, byref, create_unicode_buffer, create_string_buffer
 from components.controller import init_setup, set_point, clean_plot, update_curve
+from components.generator import download_zip
 
 FR_PRIVATE  = 0x10
 FR_NOT_ENUM = 0x20
@@ -139,7 +140,7 @@ deg.place(
 )
 
 # Buttons
-ax, chart = init_setup(window)
+ax, chart, fig = init_setup(window)
 
 canvas.create_rectangle(
     15.0,
@@ -198,6 +199,21 @@ button_clean.place(
 
 #--icons--
 
+img_down = ImgTK.PhotoImage(ImgPIL.open(relative_to_assets('download.png')))
+button_down = Button(
+    image=img_down,
+    borderwidth=0,
+    highlightthickness=0,
+    command=lambda: download_zip(fig),
+    relief="flat",
+    background = "#131626",
+)
+button_down.place(
+    x=68,
+    y=500,
+    width=50,
+    height=40
+)
 
 # Plot
 canvas.create_rectangle(
