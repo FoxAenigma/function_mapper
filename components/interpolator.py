@@ -9,14 +9,14 @@ def newton(points, _):
         if len(sample[:,0]) == 1:
             coef = sample[0,1]
         else:
-            coef = (ddiv(sample[1:,:]) - ddiv(sample[:-1,:])) / (sample[-1,0]-points[0,0])
+            coef = (ddiv(sample[1:,:]) - ddiv(sample[:-1,:])) / (sample[-1,0]-sample[0,0])
         return coef
 
     poly = 0
     roots = 1
-    for i in range(len(points)):
+    for i in range(len(points[:,0])):
         poly += roots*ddiv(points[:i+1,:])
-        roots = roots*(x-points[i,1])
+        roots = roots*(x-points[i,0])
     return poly
 
 def lagrange(points, _):
@@ -24,7 +24,7 @@ def lagrange(points, _):
         l = 1
         for i in range(len(sample)):
             if i != j:
-                l = l * (x-sample[i,0])/(sample[j,0]-sample[j,0])
+                l = l * (x-sample[i,0])/(sample[j,0]-sample[i,0])
         return l
 
     poly = 0
@@ -32,7 +32,7 @@ def lagrange(points, _):
         poly += points[j,1]*lx(points, j) 
     return poly 
 
-
+""""
 def linear(points, _):    
     a, b = coef_msquare(points)
     poly = a*x+b
@@ -52,7 +52,7 @@ def ln(points, _):
     a, _ = coef_msquare(points)
     poly = sym.ln(a*x)
     return poly
-
+"""
 
 def coef_msquare(points):
     n = len(points)

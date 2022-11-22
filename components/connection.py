@@ -4,7 +4,7 @@ import sys
 
 global UART, PATTERN, MAX_ITER
 try:
-	UART = serial.Serial("COM3")
+	UART = serial.Serial("COM4")
 	PATTERN = r'sensorX:[0-9]+ sensorY:[0-9]+ !'
 	MAX_ITER = 10
 except:
@@ -20,14 +20,11 @@ def get_data(iteration = 0):
 		} 
 	try:
 		raw = UART.read_until(b'!').decode('ascii')
-		if bool(re.search(PATTERN, raw)):
-			chunk = raw.split()
-			return {
-				"sensorX": float(chunk[0].split(":")[-1]),
-				"sensorY": float(chunk[1].split(":")[-1]),
-			}
-		else:
-			get_data(iteration+1)
+		chunk = raw.split()
+		return {
+			"sensorX": float(chunk[0].split(":")[-1]),
+			"sensorY": float(chunk[1].split(":")[-1]),
+		}
 	except:
 		get_data(iteration+1)
 	

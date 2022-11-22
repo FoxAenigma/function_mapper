@@ -100,7 +100,7 @@ canvas.create_text(
 
 algo = Combobox(
     state = "readonly", 
-    values = ["newton", "lagrange", "linear", "exp_asc", "exp_dsc", "ln"],
+    values = ["newton", "lagrange", "linear"],
     font = (FONT, 22 * -1),
     width=10,
 )

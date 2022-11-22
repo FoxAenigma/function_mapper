@@ -2,9 +2,9 @@ import pandas as pd
 import components.interpolator as polys
 import matplotlib.pyplot as plt
 from numpy import linspace, array
-from sympy import Symbol
+from sympy import Symbol, simplify
 from components.connection import get_data
-from components.generator import write_points
+from components.generator import write_points, write_summary
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
@@ -84,10 +84,15 @@ def update_curve(ax, chart, method, n):
     x = Symbol("x")
     px = getattr(polys, method)(points.to_numpy(), n)
     domain = linspace(points["sensorX"].min(), points["sensorX"].max(), num=100)
-    print(domain)
     image = array([px.subs(x, val)  for val in domain])
     ax.plot(domain, image)
     chart.draw()
+    write_summary({
+        "method": method,
+        "deg": n if n!=None else len(points)-1,
+        "poly": str(simplify(px)),
+        "points": len(points),
+    })
     return
 
 def set_point(ax, chart):

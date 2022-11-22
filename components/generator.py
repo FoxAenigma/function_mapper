@@ -12,11 +12,24 @@ def make_name():
 def download_zip(fig):
     image = "data/cache/image.png"
     data = "data/cache/points.csv"
+    info = "data/cache/description.txt"
     fig.savefig(image)
     zipper = ZipFile(f"data/{make_name()}", "w")
     zipper.write(image)
     zipper.write(data)
+    zipper.write(info)
     zipper.close()
+    return
+
+def write_summary(metadata):
+    info = f""" 
+method: {metadata["method"]}
+poly: {metadata["poly"]}
+deg: {metadata["deg"]}
+points: {metadata["points"]} 
+"""
+    with open("data/cache/description.txt", "w") as file:
+        file.write(info)
     return
 
 def write_points(values: list, mode='a'):
