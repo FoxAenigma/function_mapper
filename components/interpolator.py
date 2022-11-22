@@ -32,12 +32,13 @@ def lagrange(points, _):
         poly += points[j,1]*lx(points, j) 
     return poly 
 
-""""
+
 def linear(points, _):    
     a, b = coef_msquare(points)
     poly = a*x+b
     return poly
 
+""""
 def exp_asc(points, _):
     a, b = coef_msquare(points)
     poly = sym.exp(b)*sym.exp(a*x)

@@ -1,11 +1,10 @@
 #include <stdarg.h>
 
 
-int sensorX = A6;
-int sensorY = A7;
-float valueX;
-float valueY;
-char buffer[40];
+double valueX;
+double valueY;
+double DIG = 1000;
+char buffer[100];
 
 //setup
 void setup() {
@@ -14,8 +13,8 @@ void setup() {
 
 //loop
 void loop() {
-  valueX = analogRead(sensorX);
-  valueY = analogRead(sensorY);
+  valueX = map(analogRead(A0), 0, 1023, 0, 25000)/DIG;
+  valueY = map(analogRead(A1), 0, 1023, -50000, 50000)/DIG;
   sprintf(buffer, "sensorX:%s sensorY:%s !", String(valueX).c_str(), String(valueY).c_str());
   Serial.print(buffer);
   delay(100);

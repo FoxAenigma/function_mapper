@@ -9,7 +9,7 @@ from pathlib import Path
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Label
 from tkinter.ttk import Combobox
 from ctypes import windll, byref, create_unicode_buffer, create_string_buffer
-from components.controller import init_setup, set_point, clean_plot, update_curve
+from components.controller import init_setup, set_data, clean_plot, update_curve
 from components.generator import download_zip
 
 FR_PRIVATE  = 0x10
@@ -140,7 +140,7 @@ deg.place(
 )
 
 # Buttons
-ax, chart, fig = init_setup(window)
+ax, chart, fig, data_file = init_setup(window)
 
 canvas.create_rectangle(
     15.0,
@@ -157,7 +157,7 @@ button_point = Button(
     image=img_point,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: set_point(ax, chart),
+    command=lambda: set_data(ax, chart, data_file),
     relief="flat"
 )
 button_point.place(
@@ -172,7 +172,7 @@ button_plot = Button(
     image=img_plot,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: update_curve(ax, chart, algo.get(), deg.get()),
+    command=lambda: update_curve(ax, chart, data_file, algo.get(), deg.get()),
     relief="flat"
 )
 button_plot.place(

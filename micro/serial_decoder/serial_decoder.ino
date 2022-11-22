@@ -1,23 +1,10 @@
 #include <stdarg.h>
-#define SERIAL_PRINTF_MAX_BUFF 256
-const int PINX = A6;
-const int PINY = A7;
 
-int valueX;
-int valueY;
 
-//header
-void serialPrintf(const char *fmt, ...);
-
-//functions
-void serialPrintf(const char *fmt, ...) {
-  char buff[SERIAL_PRINTF_MAX_BUFF];  
-  va_list pargs; 
-  va_start(pargs, fmt); 
-  vsnprintf(buff, SERIAL_PRINTF_MAX_BUFF, fmt, pargs);
-  va_end(pargs);  
-  Serial.print(buff);
-}
+double valueX;
+double valueY;
+double DIG = 1000;
+char buffer[100];
 
 //setup
 void setup() {
@@ -26,8 +13,8 @@ void setup() {
 
 //loop
 void loop() {
-  valueX = map(analogRead(PINX), 0, 1023, 0, 25)/1000;
-  valueY = map(analogRead(PINY), 0, 1023, 0, 5)/1000;
-  serialPrintf("sensorX:%d sensorY:%d !", valueX, valueY);
+  valueX = map(analogRead(A0), 0, 1023, 0, 25000)/DIG;
+  valueY = map(analogRead(A1), 0, 1023, -5000, 5000)/DIG;
+  sprintf(buffer, "sensorX:%s sensorY:%s !", String(valueX).c_str(), String(valueY).c_str());
+  Serial.print(buffer);
   delay(100);
-}

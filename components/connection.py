@@ -19,6 +19,8 @@ def get_data(iteration = 0):
 			"sensorY": None,
 		} 
 	try:
+		UART.flushInput()
+		UART.flushOutput()
 		raw = UART.read_until(b'!').decode('ascii')
 		chunk = raw.split()
 		return {

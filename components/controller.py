@@ -3,23 +3,19 @@ import components.interpolator as polys
 import matplotlib.pyplot as plt
 from numpy import linspace, array
 from sympy import Symbol, simplify
-from components.connection import get_data
+from tkinter import filedialog as fd
 from components.generator import write_points, write_summary
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 def init_setup(window):
-    reset()
     ax, chart, fig = make_plot(window)
-    return ax, chart, fig
-
-def reset():
-    write_points(["sensorX", "sensorY"], mode='w')
-    return
+    data_file = ""
+    return ax, chart, fig, data_file
 
 def make_plot(window):
     plt.ion()
-    fig = Figure(figsize = (7.6, 4.5), dpi = 100, facecolor="#131626")
+    fig = Figure(figsize = (7.6, 5.5), dpi = 100, facecolor="#131626")
     fig.add_subplot(111)
     ax = fig.get_axes()[0]
     ax.grid()
@@ -32,20 +28,16 @@ def make_plot(window):
     ax.yaxis.label.set_color("#FFE6EA")
     ax.xaxis.label.set_color("#FFE6EA")
     ax.set(
-        xlabel = "Tension (V)",
-        ylabel = "Corriente (A)",
+        xlabel = "Variable X",
+        ylabel = "Imagen Y",
         facecolor = "#131626",
     )
-    ax.set_xlabel("Tension (V)")
-    ax.set_ylabel("Corriente (A)")
     chart = FigureCanvasTkAgg(fig, master = window)  
-    chart.get_tk_widget().place(x=220, y=120)
+    chart.get_tk_widget().place(x=220, y=20)
     chart.draw()
     return ax, chart, fig
 
-def clean_plot(ax, chart, points=True, curve=True, data=True):
-    if data:
-        reset()
+def clean_plot(ax, chart, points=True, curve=True):
     if points:
         for point in ax.collections:
             point.remove()
@@ -55,13 +47,12 @@ def clean_plot(ax, chart, points=True, curve=True, data=True):
     chart.draw()
     return
 
-def resize_plot(ax):
-    points = pd.read_csv("data/cache/points.csv")
+def resize_plot(ax, x_data, y_data):
     beta = 0.2
-    x_min = points["sensorX"].min()
-    y_min = points["sensorY"].min()
-    x_max = points["sensorX"].max()
-    y_max = points["sensorY"].max()
+    x_min = min(x_data)
+    y_min = min(y_data)
+    x_max = max(x_data)
+    y_max = max(y_data)
     x_prom = abs(x_max+x_min)/2
     y_prom = abs(y_max+y_min)/2
     ax.set_xlim([x_min-beta*x_prom, x_max+beta*x_prom])
@@ -70,22 +61,19 @@ def resize_plot(ax):
 
 def update_points(ax, chart, x_point, y_point):
     ax.scatter(x_point, y_point, marker="x", color="#FFE6EA")
-    resize_plot(ax)
+    resize_plot(ax, x_point, y_point)
     chart.draw()
     return
 
-def update_curve(ax, chart, method, n):
-    clean_plot(ax, chart, points=False, data=False)
-    points = pd.read_csv("data/cache/points.csv")
-    points.sort_values(by=["sensorX"], inplace=True)
-    points.dropna(inplace=True)
-    points.drop_duplicates(subset=["sensorX"], inplace=True)
-
+def update_curve(ax, chart, data_file, method, n):
+    clean_plot(ax, chart, points=False)
+    sca_data = ax.collections[0]
+    points = sca_data.get_offsets().data
     x = Symbol("x")
-    px = getattr(polys, method)(points.to_numpy(), n)
-    domain = linspace(points["sensorX"].min(), points["sensorX"].max(), num=100)
+    px = getattr(polys, method)(points, n)
+    domain = linspace(min(points[:,0]), max(points[:,0]), num=100)
     image = array([px.subs(x, val)  for val in domain])
-    ax.plot(domain, image)
+    ax.plot(domain, image, color="#FFE6EA")
     chart.draw()
     write_summary({
         "method": method,
@@ -95,10 +83,14 @@ def update_curve(ax, chart, method, n):
     })
     return
 
-def set_point(ax, chart):
-    data = get_data()
-    x_point = data["sensorX"]
-    y_point = data["sensorY"]
-    write_points([x_point, y_point])
-    update_points(ax, chart, x_point, y_point)
+def set_data(ax, chart, data_file):
+    data_file = fd.askopenfilename()
+    data = pd.read_csv(data_file)    
+    x_points = data.iloc[:,0]
+    y_points = data.iloc[:,1]
+    ax.set(
+        xlabel = data.columns[0],
+        ylabel = data.columns[1],
+    )
+    update_points(ax, chart, x_points, y_points)
     return
