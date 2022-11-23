@@ -74,24 +74,31 @@ def update_curve(ax, chart, data_file, method, n):
         n = None
     sca_data = ax.collections[0]
     points = sca_data.get_offsets().data
+    write_points(points, "data/cache/points.csv")
+    copy = np.copy(points)
     points = random_sample(points, n)
+    write_points(points, "data/cache/sample.csv")
     x = Symbol("x")
-    px = getattr(polys, method)(points)
+    px, e_method = getattr(polys, method)(points)
     domain = linspace(min(points[:,0]), max(points[:,0]), num=100)
     image = array([px.subs(x, val)  for val in domain])
     ax.plot(domain, image, color="#FFE6EA")
     chart.draw()
     write_summary({
+        "function": f"{ax.get_ylabel()}({ax.get_xlabel()})",
+        "variables": f"{ax.get_xlabel()} -- {ax.get_ylabel()}",
         "method": method,
-        "deg": n if n!=None else len(points)-1,
         "poly": str(simplify(px)),
         "points": len(points),
+        "err_sample": err_sample(copy,px),
+        "err_method": e_method,
     })
     return
 
 def set_data(ax, chart, data_file):
+    clean_plot(ax, chart)
     data_file = fd.askopenfilename()
-    data = pd.read_csv(data_file)    
+    data = pd.read_csv(data_file)
     x_points = data.iloc[:,0]
     y_points = data.iloc[:,1]
     ax.set(
@@ -110,12 +117,20 @@ def random_sample(points, n):
         return points
     sample = np.zeros((n+1,2))
     dim = n+1
-    chunk = len(points)//(n+1) + 1
+    n_old = len(points) - 1
+    chunk = int((n_old+1)//(n+1) + ((n_old+1)%(n+1))/(abs((n_old+1)%(n+1) - 1) + 1))
     for chip in range(0,dim):
         if chip == 0:
             sample[chip] = points[0]
         elif chip == dim-1:
             sample[chip] = points[-1]
         else:
-            sample[chip] = points[chunk*(chip):chunk*(chip+1)][np.random.randint(0,chunk)]
+            sample[chip] = points[chunk*(chip):chunk*(chip+1)][np.random.randint(0,chunk-1)]
     return sample
+
+def err_sample(points, poly):
+    x = Symbol("x")
+    e = 0
+    for k in range(len(points)):
+        e += abs(points[k,1]-poly.subs({x: points[k,0]}))
+    return e/len(points)
