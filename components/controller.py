@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import components.interpolator as polys
 import matplotlib.pyplot as plt
 from numpy import linspace, array
@@ -67,10 +68,15 @@ def update_points(ax, chart, x_point, y_point):
 
 def update_curve(ax, chart, data_file, method, n):
     clean_plot(ax, chart, points=False)
+    try:
+        n = int(n)
+    except:
+        n = None
     sca_data = ax.collections[0]
     points = sca_data.get_offsets().data
+    points = random_sample(points, n)
     x = Symbol("x")
-    px = getattr(polys, method)(points, n)
+    px = getattr(polys, method)(points)
     domain = linspace(min(points[:,0]), max(points[:,0]), num=100)
     image = array([px.subs(x, val)  for val in domain])
     ax.plot(domain, image, color="#FFE6EA")
@@ -94,3 +100,22 @@ def set_data(ax, chart, data_file):
     )
     update_points(ax, chart, x_points, y_points)
     return
+
+
+def random_sample(points, n):
+    #n is poly deg
+    if n == None:
+        return points
+    if len(points) < n+1:
+        return points
+    sample = np.zeros((n+1,2))
+    dim = n+1
+    chunk = len(points)//(n+1) + 1
+    for chip in range(0,dim):
+        if chip == 0:
+            sample[chip] = points[0]
+        elif chip == dim-1:
+            sample[chip] = points[-1]
+        else:
+            sample[chip] = points[chunk*(chip):chunk*(chip+1)][np.random.randint(0,chunk)]
+    return sample

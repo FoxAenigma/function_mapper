@@ -1,10 +1,11 @@
 import sympy as sym
+import numpy as np
 
 global TOL, x
 TOL = 1e-5
 x = sym.Symbol("x")
 
-def newton(points, _):
+def newton(points):
     def ddiv(sample):
         if len(sample[:,0]) == 1:
             coef = sample[0,1]
@@ -19,7 +20,7 @@ def newton(points, _):
         roots = roots*(x-points[i,0])
     return poly
 
-def lagrange(points, _):
+def lagrange(points):
     def lx(sample, j):
         l = 1
         for i in range(len(sample)):
@@ -33,7 +34,7 @@ def lagrange(points, _):
     return poly 
 
 
-def linear(points, _):    
+def linear(points):    
     a, b = coef_msquare(points)
     poly = a*x+b
     return poly
@@ -70,3 +71,4 @@ def coef_msquare(points):
     a = (n*xiyi-xi*yi)/(n*xi2-xi**2)
     b = (yi-a*xi)/n
     return a, b
+
