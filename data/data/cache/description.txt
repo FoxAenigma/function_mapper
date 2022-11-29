@@ -1,0 +1,7 @@
+function:corriente(tension)
+variables:tension -- corriente
+method:linear
+poly:0.000999800757009875*x + 7.1319283661761e-8
+points:20
+err_sample:2.28412935352806e-6
+err_method:2.7139081272860514e-06

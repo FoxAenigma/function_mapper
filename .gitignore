@@ -1,5 +1,7 @@
 !/.gitignore
 .venv/
+build/
+dist/
 
 # Bytes-compile
 __pycache__/
